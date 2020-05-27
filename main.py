@@ -21,22 +21,25 @@ def login():
         user = input("Enter The User Name:\t")
         password = str(input("Enter The Password:\t"))
         hashed = hashlib.sha256(password.encode('utf-8')).hexdigest()
-        c.execute("SELECT password FROM Users WHERE user = ? " , (user,))
-        # c.execute("SELECT * FROM Users")
-        data = c.fetchone()
+        if m.check_input(user):
+            c.execute("SELECT password FROM Users WHERE user = ? " , (user,))
+            data = c.fetchone()
 
-        for row in data:
-            if hashed in row:
-                menu(user)
-                state = False
-                break
+            for row in data:
+                if hashed in row:
+                    menu(user)
+                    state = False
+                    break
 
-            if row[0] == None:
-                choice = str(input("Incorrect User Name\nWant To Create A New User?(Y/n)"))
-                if choice == "n":
-                    continue
-                else:
-                    create()
+                if row[0] == None:
+                    choice = str(input("Incorrect User Name\nWant To Create A New User?(Y/n)"))
+                    if choice == "n":
+                        continue
+                    else:
+                        create()
+
+        else:
+            print("Error Parsing Input!")
 
 
 def create():
@@ -63,7 +66,7 @@ def menu(user):
         print("q: Exit The Program")
         print("******************")
 
-        print("\n\n\n\n")
+        print("\n\n")
 
         choice = input("Enter Your Choice:\t")
 
@@ -76,6 +79,8 @@ def menu(user):
         elif choice == "d":
             m.delete_pass(user)
         elif choice == "q":
+            c.close()
+            conn.close()
             exit()
         else:
             continue
@@ -89,7 +94,7 @@ if __name__ == '__main__':
         print("1.) Create New Safe")
         print("2.) Login Into Your Safe")
         print("******************")
-        print("\n\n\n")
+        print("\n\n")
         choice = int(input("Choose:\t"))
         if choice == 1:
             create()
